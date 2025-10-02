@@ -4,7 +4,7 @@
   "description": "A simple CLI tool for managing and storing your favorite quotes",
   "main": "src/app.js",
   "bin": {
-    "quote": "./src/app.js"
+    "quote-me": "./src/app.js"
   },
   "scripts": {
     "start": "node src/app.js",
