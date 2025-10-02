@@ -6,6 +6,7 @@ import { join } from "path";
 import { homedir } from "os";
 import { mkdirSync, existsSync, writeFileSync } from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { Command } from "commander";
 
 /**
  * Returns the path to the application's data directory based on the current operating system.
@@ -76,6 +77,11 @@ async function saveQuote(db, quote, author) {
   console.log(`Quote saved: "${quote}" - ${author}`);
 }
 
+/**
+ * Deletes a quote by ID from the database.
+ * @param {Low} db - The database instance
+ * @param {string} id - The quote ID to delete
+ */
 async function deleteQuote(db, id) {
   const initialLength = db.data.quotes.length;
   db.data.quotes = db.data.quotes.filter((q) => q.id !== id);
@@ -118,53 +124,57 @@ async function saveJson(db) {
 }
 
 /**
- * Displays usage information.
- */
-function showUsage() {
-  console.log('Usage: quote-me "<quote>" "<author>"');
-  console.log('Example: quote-me "To be or not to be" "Shakespeare"');
-  console.log("Other commands:");
-  console.log("  quote-me list               # List all quotes");
-  console.log("  quote-me delete <quote_id>  # Delete a quote by ID");
-  console.log("  quote-me json               # Export quotes to quotes.json in current directory");
-}
-
-/**
  * Main application function.
  */
 async function main() {
-  const [quote, author] = process.argv.slice(2);
+  const program = new Command();
 
   const dataDir = getDataDir();
   ensureDataDirectory(dataDir);
   const db = await initializeDatabase(dataDir);
 
-  if (quote === "list") {
-    await listQuotes(db);
-    return;
-  }
+  program
+    .name("quote-me")
+    .description(
+      "A simple CLI tool for managing and storing your favorite quotes"
+    )
+    .version("1.0.0");
 
-  if (quote === "delete") {
-    const id = parseInt(author, 10);
-    if (isNaN(id)) {
-      console.log("Please provide a valid quote ID to delete.");
-      return;
-    }
-    await deleteQuote(db, id);
-    return;
-  }
+  program
+    .command("add")
+    .alias("a")
+    .description("Add a new quote")
+    .argument("<quote>", "The quote text")
+    .argument("<author>", "The quote author")
+    .action(async (quote, author) => {
+      await saveQuote(db, quote, author);
+    });
 
-  if (quote === "json") {
-    saveJson(db);
-    return;
-  }
+  program
+    .command("list")
+    .alias("l")
+    .description("List all saved quotes")
+    .action(async () => {
+      await listQuotes(db);
+    });
 
-  if (!quote || !author) {
-    showUsage();
-    return;
-  }
+  program
+    .command("delete")
+    .alias("d")
+    .description("Delete a quote by ID")
+    .argument("<id>", "The quote ID to delete")
+    .action(async (id) => {
+      await deleteQuote(db, id);
+    });
 
-  await saveQuote(db, quote, author);
+  program
+    .command("json")
+    .description("Export quotes to quotes.json in current directory")
+    .action(async () => {
+      await saveJson(db);
+    });
+
+  await program.parseAsync();
 }
 
 main().catch(console.error);

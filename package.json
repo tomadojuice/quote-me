@@ -1,6 +1,6 @@
 {
   "name": "quote-me",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple CLI tool for managing and storing your favorite quotes",
   "main": "src/app.js",
   "bin": {
@@ -17,7 +17,7 @@
     "terminal",
     "command-line"
   ],
-  "author": "Alessio Seebergerg",
+  "author": "Alessio Seeberger",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -28,6 +28,7 @@
   ],
   "dependencies": {
     "lowdb": "^7.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "commander": "^11.1.0"
   }
 }
