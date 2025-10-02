@@ -5,6 +5,7 @@ import { JSONFile } from "lowdb/node";
 import { join } from "path";
 import { homedir } from "os";
 import { mkdirSync, existsSync, writeFileSync } from "fs";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Returns the path to the application's data directory based on the current operating system.
@@ -65,7 +66,7 @@ async function initializeDatabase(dataDir) {
  */
 async function saveQuote(db, quote, author) {
   db.data.quotes.push({
-    id: Date.now(),
+    id: uuidv4(),
     quote: quote,
     author: author,
     createdAt: new Date().toISOString(),

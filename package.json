@@ -27,6 +27,7 @@
     "src/"
   ],
   "dependencies": {
-    "lowdb": "^7.0.1"
+    "lowdb": "^7.0.1",
+    "uuid": "^10.0.0"
   }
 }
