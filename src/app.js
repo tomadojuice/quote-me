@@ -121,8 +121,12 @@ async function saveJson(db) {
  * Displays usage information.
  */
 function showUsage() {
-  console.log('Usage: quote "<quote>" "<author>"');
-  console.log('Example: quote "To be or not to be" "Shakespeare"');
+  console.log('Usage: quote-me "<quote>" "<author>"');
+  console.log('Example: quote-me "To be or not to be" "Shakespeare"');
+  console.log("Other commands:");
+  console.log("  quote-me list               # List all quotes");
+  console.log("  quote-me delete <quote_id>  # Delete a quote by ID");
+  console.log("  quote-me json               # Export quotes to quotes.json in current directory");
 }
 
 /**
