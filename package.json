@@ -1,0 +1,32 @@
+{
+  "name": "quote-me",
+  "version": "1.0.0",
+  "description": "A simple CLI tool for managing and storing your favorite quotes",
+  "main": "src/app.js",
+  "bin": {
+    "quote": "./src/app.js"
+  },
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "quotes",
+    "productivity",
+    "terminal",
+    "command-line"
+  ],
+  "author": "Alessio Seebergerg",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": [
+    "src/"
+  ],
+  "dependencies": {
+    "lowdb": "^7.0.1"
+  }
+}

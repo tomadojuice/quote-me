@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
+import { join } from "path";
+import { homedir } from "os";
+import { mkdirSync, existsSync, writeFileSync } from "fs";
+
+/**
+ * Returns the path to the application's data directory based on the current operating system.
+ *
+ * - On Windows, uses `%APPDATA%\quotes` or falls back to `<home>\AppData\Roaming\quotes`.
+ * - On macOS, uses `<home>/Library/Application Support/quotes`.
+ * - On Linux, uses `$XDG_DATA_HOME/quotes` or falls back to `<home>/.local/share/quotes`.
+ *
+ * @returns {string} The absolute path to the application's data directory.
+ */
+function getDataDir() {
+  const home = homedir();
+
+  switch (process.platform) {
+    case "win32":
+      return join(
+        process.env.APPDATA || join(home, "AppData", "Roaming"),
+        "quotes"
+      );
+    case "darwin":
+      return join(home, "Library", "Application Support", "quotes");
+    case "linux":
+    default:
+      return join(
+        process.env.XDG_DATA_HOME || join(home, ".local", "share"),
+        "quotes"
+      );
+  }
+}
+
+/**
+ * Ensures the data directory exists, creating it if necessary.
+ * @param {string} dataDir - The path to the data directory
+ */
+function ensureDataDirectory(dataDir) {
+  if (!existsSync(dataDir)) {
+    mkdirSync(dataDir, { recursive: true });
+  }
+}
+
+/**
+ * Initializes and returns a lowdb database instance.
+ * @param {string} dataDir - The path to the data directory
+ * @returns {Promise<Low>} The initialized database instance
+ */
+async function initializeDatabase(dataDir) {
+  const adapter = new JSONFile(join(dataDir, "quotes.json"));
+  const db = new Low(adapter, { quotes: [] });
+  await db.read();
+  return db;
+}
+
+/**
+ * Saves a quote to the database.
+ * @param {Low} db - The database instance
+ * @param {string} quote - The quote text
+ * @param {string} author - The quote author
+ */
+async function saveQuote(db, quote, author) {
+  db.data.quotes.push({
+    id: Date.now(),
+    quote: quote,
+    author: author,
+    createdAt: new Date().toISOString(),
+  });
+
+  await db.write();
+  console.log(`Quote saved: "${quote}" - ${author}`);
+}
+
+async function deleteQuote(db, id) {
+  const initialLength = db.data.quotes.length;
+  db.data.quotes = db.data.quotes.filter((q) => q.id !== id);
+
+  if (db.data.quotes.length < initialLength) {
+    await db.write();
+    console.log(`Quote with ID ${id} deleted.`);
+  } else {
+    console.log(`No quote found with ID ${id}.`);
+  }
+}
+
+/**
+ * Lists all quotes in the database.
+ * @param {Low} db - The database instance
+ */
+async function listQuotes(db) {
+  if (db.data.quotes.length === 0) {
+    console.log("No quotes found.");
+    return;
+  }
+
+  db.data.quotes.forEach(({ id, quote, author, createdAt }) => {
+    console.log(`[${id}] "${quote}" - ${author} (added on ${createdAt})`);
+  });
+}
+
+/**
+ * Saves database to JSON file in current directory.
+ *
+ * @async
+ * @param {Low} db - The database instance
+ */
+async function saveJson(db) {
+  const outputPath = join(process.cwd(), "quotes.json");
+  const jsonData = JSON.stringify(db.data, null, 2);
+
+  writeFileSync(outputPath, jsonData, "utf8");
+  console.log(`Database exported to: ${outputPath}`);
+}
+
+/**
+ * Displays usage information.
+ */
+function showUsage() {
+  console.log('Usage: quote "<quote>" "<author>"');
+  console.log('Example: quote "To be or not to be" "Shakespeare"');
+}
+
+/**
+ * Main application function.
+ */
+async function main() {
+  const [quote, author] = process.argv.slice(2);
+
+  const dataDir = getDataDir();
+  ensureDataDirectory(dataDir);
+  const db = await initializeDatabase(dataDir);
+
+  if (quote === "list") {
+    await listQuotes(db);
+    return;
+  }
+
+  if (quote === "delete") {
+    const id = parseInt(author, 10);
+    if (isNaN(id)) {
+      console.log("Please provide a valid quote ID to delete.");
+      return;
+    }
+    await deleteQuote(db, id);
+    return;
+  }
+
+  if (quote === "json") {
+    saveJson(db);
+    return;
+  }
+
+  if (!quote || !author) {
+    showUsage();
+    return;
+  }
+
+  await saveQuote(db, quote, author);
+}
+
+main().catch(console.error);
