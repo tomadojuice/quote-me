@@ -22,13 +22,13 @@ quote-me is a lightweight command-line interface tool that helps you collect, or
 
 ## Installation
 
-### From npm (when published)
+Install directly from GitHub:
 
 ```bash
-npm install -g quote-me
+npm install -g git+https://github.com/tomadojuice/quote-me.git
 ```
 
-### From source
+### From source (for development)
 
 1. Clone the repository:
 ```bash
