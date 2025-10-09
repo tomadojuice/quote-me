@@ -7,6 +7,7 @@ import { homedir } from "os";
 import { mkdirSync, existsSync, writeFileSync } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { Command } from "commander";
+import { startWebServer } from "./server.js";
 
 /**
  * Returns the path to the application's data directory based on the current operating system.
@@ -172,6 +173,13 @@ async function main() {
     .description("Export quotes to quotes.json in current directory")
     .action(async () => {
       await saveJson(db);
+    });
+  
+  program
+    .command("web")
+    .description("Start the web interface")
+    .action(() => {
+      startWebServer();
     });
 
   await program.parseAsync();
