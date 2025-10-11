@@ -4,11 +4,10 @@ import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import { join } from "path";
 import { homedir } from "os";
-import { mkdirSync, existsSync, writeFileSync } from "fs";
+import { mkdirSync, existsSync, writeFileSync, readFileSync } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { Command } from "commander";
 import { startWebServer } from "./server.js";
-
 
 /**
  * Returns the path to the application's data directory based on the current operating system.
@@ -126,6 +125,42 @@ async function saveJson(db) {
 }
 
 /**
+ * Imports quotes from a JSON file and adds them to the database.
+ * Skips quotes with duplicate UUIDs to prevent duplicates.
+ *
+ * @async
+ * @param {object} db - The database object with a `data.quotes` array and a `write` method.
+ * @param {string} file - The path to the JSON file containing quotes.
+ * @returns {Promise<void>} Resolves when the quotes have been imported and the database has been written.
+ * @throws Will log an error if the file cannot be read, parsed, or if the format is invalid.
+ */
+async function importQuotes(db, file) {
+  try {
+    const data = JSON.parse(readFileSync(file, "utf8"));
+    if (Array.isArray(data.quotes)) {
+      const existingIds = new Set(db.data.quotes.map((quote) => quote.id));
+
+      const newQuotes = data.quotes.filter((quote) => {
+        return !existingIds.has(quote.id);
+      });
+
+      db.data.quotes.push(...newQuotes);
+      await db.write();
+
+      const skippedCount = data.quotes.length - newQuotes.length;
+      console.log(`Imported ${newQuotes.length} quotes from ${file}`);
+      if (skippedCount > 0) {
+        console.log(`Skipped ${skippedCount} duplicate quotes (based on UUID)`);
+      }
+    } else {
+      console.error("Invalid file format: 'quotes' should be an array.");
+    }
+  } catch (error) {
+    console.error(`Failed to import quotes from ${file}:`, error.message);
+  }
+}
+
+/**
  * Main application function.
  */
 async function main() {
@@ -174,7 +209,15 @@ async function main() {
     .action(async () => {
       await saveJson(db);
     });
-  
+
+  program
+    .command("import")
+    .description("Import quotes from file")
+    .argument("<file>", "Path to JSON file")
+    .action(async (file) => {
+      await importQuotes(db, file);
+    });
+
   program
     .command("web")
     .description("Start the web interface")
