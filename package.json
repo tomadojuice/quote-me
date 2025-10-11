@@ -1,6 +1,6 @@
 {
   "name": "quote-me",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A simple CLI tool for managing and storing your favorite quotes",
   "main": "src/app.js",
   "bin": {
