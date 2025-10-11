@@ -186,16 +186,6 @@ Example:
 npm start -- add "Test quote" "Test Author"
 ```
 
-**Build everything:**
-```bash
-npm run build
-```
-
-**Build just the web interface:**
-```bash
-npm run build:web
-```
-
 **Package for distribution:**
 ```bash
 npm run build:package
@@ -203,32 +193,19 @@ npm run build:package
 
 ### 🌐 Web Development Mode
 
-The web interface supports **hot reloading** during development! Here's how it works:
-
-**Development Mode** (with proxying):
+**Development Mode:**
 ```bash
-# Set development environment
-export NODE_ENV=development
-
-# Start the web server
-quote-me web
+npm run dev:web
 ```
 
-When `NODE_ENV=development` is set, the server automatically **proxies requests** to a Vite dev server running on `http://localhost:5173`. This gives you:
-- ⚡ Hot module replacement
-- 🔄 Instant reload on file changes
-- 🎯 Source maps for debugging
+This starts the web server with `nodemon` for automatic restarts when you make changes to the server code.
 
 **Production Mode:**
 ```bash
-# Build the web assets first
-npm run build:web
-
-# Start without NODE_ENV (defaults to production)
 quote-me web
 ```
 
-In production mode, it serves the built static files from `src/web/dist`.
+The web interface uses Express + HTMX for a simple, fast, and modern experience without the complexity of a build process.
 
 ### 📁 Project Structure
 
@@ -236,11 +213,10 @@ In production mode, it serves the built static files from `src/web/dist`.
 quote-me/
 ├── src/
 │   ├── app.js          # Main CLI application
-│   ├── server.js       # Express web server with proxy support
-│   └── web/            # React web interface
-│       ├── src/        # React components and assets
-│       ├── dist/       # Built web assets (production)
-│       └── package.json # Web dependencies
+│   └── web/            # Express + HTMX web interface
+│       ├── server.js   # Express web server
+│       ├── index.html  # HTMX-powered web interface
+│       └── style.css   # Styling for the web interface
 ├── package.json        # Main project metadata
 └── README.md          # This file
 ```
@@ -248,6 +224,8 @@ quote-me/
 ## Technologies Used
 
 - [Node.js](https://nodejs.org/) - JavaScript runtime
+- [Express](https://expressjs.com/) - Web application framework
+- [HTMX](https://htmx.org/) - Modern HTML-driven interactivity
 - [lowdb](https://github.com/typicode/lowdb) - Simple local JSON database
 - [Commander.js](https://github.com/tj/commander.js) - Command-line interface framework
 - [uuid](https://github.com/uuidjs/uuid) - UUID generation for unique quote IDs
