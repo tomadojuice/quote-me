@@ -1,9 +1,6 @@
 name: Publish Package
 
 on:
-  push:
-    branches:
-      - main
   release:
     types: [published]
 
@@ -58,23 +55,13 @@ jobs:
           npm pkg set repository.type="git"
           npm pkg set repository.url="git+https://github.com/${{ github.repository }}.git"
 
-      - name: Set version for beta releases
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          # Get current version and append beta suffix with timestamp
-          CURRENT_VERSION=$(npm pkg get version | tr -d '"')
-          BETA_VERSION="${CURRENT_VERSION}-beta.$(date +%Y%m%d%H%M%S)"
-          npm version $BETA_VERSION --no-git-tag-version
-          echo "Publishing beta version: $BETA_VERSION"
-
-      - name: Set version for stable releases
-        if: github.event_name == 'release'
+      - name: Set version from release tag
         run: |
           # Use the release tag as version (remove 'v' prefix if present)
           RELEASE_VERSION="${{ github.event.release.tag_name }}"
           CLEAN_VERSION=${RELEASE_VERSION#v}
           npm version $CLEAN_VERSION --no-git-tag-version
-          echo "Publishing stable version: $CLEAN_VERSION"
+          echo "Publishing version: $CLEAN_VERSION"
 
       - name: Publish to GitHub Package Registry
         run: npm publish
@@ -86,20 +73,11 @@ jobs:
           PACKAGE_NAME=$(npm pkg get name | tr -d '"')
           PACKAGE_VERSION=$(npm pkg get version | tr -d '"')
           
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            RELEASE_TYPE="Beta"
-            TRIGGER="Push to main branch"
-          else
-            RELEASE_TYPE="Stable"
-            TRIGGER="Release ${{ github.event.release.tag_name }}"
-          fi
-          
           echo "## 📦 Package Published Successfully" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Package**: \`${PACKAGE_NAME}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Version**: \`${PACKAGE_VERSION}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Type**: ${RELEASE_TYPE}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Trigger**: ${TRIGGER}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: Release ${{ github.event.release.tag_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Registry**: GitHub Package Registry" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Installation" >> $GITHUB_STEP_SUMMARY
