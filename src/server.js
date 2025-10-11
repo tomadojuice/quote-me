@@ -6,7 +6,15 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const startWebServer = (quotesData) => {
+/**
+ * Starts an Express web server to serve quotes data and static files or proxy requests in development.
+ *
+ * @param {Object} quotesData - An object containing quotes data to be served by the API.
+ * @param {Array} quotesData.quotes - An array of quote objects to be returned by the /api/quotes endpoint.
+ *
+ * @returns {void}
+ */
+export const startWebServer = async (quotesData) => {
   const app = express();
   const PORT = process.env.PORT || 3000;
   const isDev = process.env.NODE_ENV === "development";
