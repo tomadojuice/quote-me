@@ -1,13 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web</title>
+    <title>Quote Me</title>
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"
+      integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body id="root">
+    <div class="quotes-container" hx-get="/api/quotes" hx-trigger="load"></div>
   </body>
+  <script>
+    async function downloadQuote(quoteId, authorName) {
+      const quoteElement = document.getElementById(quoteId);
+      if (!quoteElement) return;
+
+      const button = quoteElement.querySelector(".quote-download-button");
+      button.hidden = true;
+
+      try {
+        const dataUrl = await htmlToImage.toPng(quoteElement);
+
+        const link = document.createElement("a");
+        link.download = `quote-${authorName
+          .replace(/\s+/g, "-")
+          .toLowerCase()}.png`;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error("Error generating image:", error);
+        alert("Failed to download quote image");
+      } finally {
+        button.hidden = false;
+      }
+    }
+  </script>
 </html>
