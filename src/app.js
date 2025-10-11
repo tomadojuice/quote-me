@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Command } from "commander";
 import { startWebServer } from "./server.js";
 
+
 /**
  * Returns the path to the application's data directory based on the current operating system.
  *
@@ -138,8 +139,7 @@ async function main() {
     .name("quote-me")
     .description(
       "A simple CLI tool for managing and storing your favorite quotes"
-    )
-    .version("1.0.0");
+    );
 
   program
     .command("add")
