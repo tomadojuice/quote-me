@@ -10,6 +10,15 @@ export const QuoteCard: FunctionComponent<QuoteCardProps> = ({ quote }) => {
   const quoteCardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   const handleDownload = async () => {
     if (quoteCardRef.current === null) {
       return;
@@ -38,10 +47,15 @@ export const QuoteCard: FunctionComponent<QuoteCardProps> = ({ quote }) => {
       <p className="quote-text">{quote.quote}</p>
       <p className="quote-author">{quote.author}</p>
       {!isDownloading && (
-        <button className="quote-download-button" onClick={handleDownload} value="Download">
+        <button
+          className="quote-download-button"
+          onClick={handleDownload}
+          value="Download"
+        >
           Download
         </button>
       )}
+      <p className="quote-date">{formatDate(quote.createdAt)}</p>
     </div>
   );
 };
