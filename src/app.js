@@ -7,7 +7,7 @@ import { homedir } from "os";
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { Command } from "commander";
-import { startWebServer } from "./server.js";
+import { startWebServer } from "./web/server.js";
 
 /**
  * Returns the path to the application's data directory based on the current operating system.

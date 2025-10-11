@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "node src/app.js",
-    "build": "npm run build:web && npm run build:package",
-    "build:web": "cd src/web && npm ci && npm run build",
+    "dev:web": "nodemon --exec node src/app.js web",
     "build:package": "npm pack"
   },
   "keywords": [
@@ -32,5 +31,8 @@
     "http-proxy-middleware": "^3.0.5",
     "lowdb": "^7.0.1",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
