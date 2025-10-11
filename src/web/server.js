@@ -38,24 +38,22 @@ export const startWebServer = async (quotesData) => {
   const PORT = process.env.PORT || 3001;
 
   app.get("/api/quotes", (req, res) => {
-    return (
-      quotesData.quotes.map((quote) =>
-        res.write(html`
-          <div class="quote-card" id="quote-${quote.id || formatAuthorString(quote.author)}">
-            <p class="quote-text">${quote.quote}</p>
-            <p class="quote-author">${quote.author}</p>
-            <button 
-              class="quote-download-button"
-              onclick="downloadQuote('quote-${quote.id || formatAuthorString(quote.author)}', '${quote.author}')"
-            >
-              Download
-            </button>
-            <p class="quote-date">${formatDate(quote.createdAt)}</p>
-          </div>
-        `)
-      ),
-      res.end()
-    );
+    quotesData.quotes.forEach((quote) => {
+      res.write(html`
+        <div class="quote-card" id="quote-${quote.id || formatAuthorString(quote.author)}">
+          <p class="quote-text">${quote.quote}</p>
+          <p class="quote-author">${quote.author}</p>
+          <button 
+            class="quote-download-button"
+            onclick="downloadQuote('quote-${quote.id || formatAuthorString(quote.author)}', '${quote.author}')"
+          >
+            Download
+          </button>
+          <p class="quote-date">${formatDate(quote.createdAt)}</p>
+        </div>
+      `);
+    });
+    res.end();
   });
 
   app.use(express.static(path.join(__dirname)));
