@@ -10,8 +10,7 @@
     "start": "node src/app.js",
     "build": "npm run build:web && npm run build:package",
     "build:web": "cd src/web && npm ci && npm run build",
-    "build:package": "npm pack",
-    "prepublishOnly": "npm run build:web"
+    "build:package": "npm pack"
   },
   "keywords": [
     "cli",
@@ -26,18 +25,6 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "files": [
-    "src/**/*",
-    "!src/web/src/**/*",
-    "!src/web/node_modules/**/*",
-    "!src/web/package*.json",
-    "!src/web/vite.config.ts",
-    "!src/web/tsconfig*.json",
-    "!src/web/eslint.config.js",
-    "!src/web/README.md",
-    "!src/web/.gitignore",
-    "src/web/dist/**/*"
-  ],
   "dependencies": {
     "commander": "^11.1.0",
     "express": "^5.1.0",
