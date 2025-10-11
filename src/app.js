@@ -169,7 +169,7 @@ async function main() {
     });
 
   program
-    .command("json")
+    .command("export")
     .description("Export quotes to quotes.json in current directory")
     .action(async () => {
       await saveJson(db);
