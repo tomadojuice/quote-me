@@ -42,9 +42,6 @@ jobs:
             echo "No test script found, skipping tests"
           fi
 
-      - name: Build package
-        run: npm run build
-
       - name: Configure package for GitHub registry
         run: |
           # Update package name to include scope for GitHub registry
