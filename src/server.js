@@ -6,10 +6,14 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const startWebServer = () => {
+export const startWebServer = (quotesData) => {
   const app = express();
   const PORT = process.env.PORT || 3000;
-  const isDev = process.env.NODE_ENV !== "production";
+  const isDev = process.env.NODE_ENV === "development";
+
+  app.get('/api/quotes', (req, res) => {
+    res.json(quotesData.quotes || []);
+  });
 
   if (isDev) {
     app.use(

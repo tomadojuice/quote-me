@@ -179,7 +179,7 @@ async function main() {
     .command("web")
     .description("Start the web interface")
     .action(() => {
-      startWebServer();
+      startWebServer(db.data);
     });
 
   await program.parseAsync();
