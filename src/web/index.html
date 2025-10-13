@@ -21,7 +21,7 @@
       if (!quoteElement) return;
 
       const button = quoteElement.querySelector(".quote-download-button");
-      button.hidden = true;
+      button.classList.add("invisible");
 
       try {
         const dataUrl = await htmlToImage.toPng(quoteElement);
@@ -38,7 +38,7 @@
         console.error("Error generating image:", error);
         alert("Failed to download quote image");
       } finally {
-        button.hidden = false;
+        button.classList.remove("invisible");
       }
     }
   </script>

@@ -22,8 +22,24 @@ const formatDate = (dateString) => {
 };
 
 const formatAuthorString = (author) => {
-  return author.replace(/\s+/g, '-').toLowerCase();
-}
+  return author.replace(/\s+/g, "-").toLowerCase();
+};
+
+const downloadIconSVG = html`
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <!--Boxicons v3.0 https://boxicons.com | License  https://docs.boxicons.com/free-->
+    <path
+      d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10 10-4.49 10-10S17.51 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
+    ></path>
+    <path d="M13 8h-2v4H8l4 4 4-4h-3z"></path>
+  </svg>
+`;
 
 /**
  * Starts an Express web server to serve quotes data and static files or proxy requests in development.
@@ -40,15 +56,21 @@ export const startWebServer = async (quotesData) => {
   app.get("/api/quotes", (req, res) => {
     quotesData.quotes.forEach((quote) => {
       res.write(html`
-        <div class="quote-card" id="quote-${quote.id || formatAuthorString(quote.author)}">
+        <div
+          class="quote-card"
+          id="quote-${quote.id || formatAuthorString(quote.author)}"
+        >
+          <div class="quote-bar">
+            <button
+              class="quote-download-button"
+              onclick="downloadQuote('quote-${quote.id ||
+              formatAuthorString(quote.author)}', '${quote.author}')"
+            >
+              ${downloadIconSVG}
+            </button>
+          </div>
           <p class="quote-text">${quote.quote}</p>
           <p class="quote-author">${quote.author}</p>
-          <button 
-            class="quote-download-button"
-            onclick="downloadQuote('quote-${quote.id || formatAuthorString(quote.author)}', '${quote.author}')"
-          >
-            Download
-          </button>
           <p class="quote-date">${formatDate(quote.createdAt)}</p>
         </div>
       `);
